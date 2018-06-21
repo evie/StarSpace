@@ -28,6 +28,8 @@ public:
 
   virtual void getRandomRHS(std::vector<Base>& results)
     const;
+  virtual void getRandomRHS(const ParseResults& s, std::vector<Base>& results)
+    const;
 
   virtual void save(std::ostream& out);
 

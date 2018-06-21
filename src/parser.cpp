@@ -66,7 +66,7 @@ void DataParser::parseForDict(
     if (args_->normalizeText) {
       normalize_text(token);
     }
-    if (token.find("__weight__") == std::string::npos) {
+    if (token.find("__weight__") == std::string::npos && token.find("__negative__") == std::string::npos) {
       tokens.push_back(token);
     }
   }

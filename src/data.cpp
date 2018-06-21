@@ -256,6 +256,10 @@ void InternDataHandler::getRandomRHS(vector<Base>& results) const {
   }
 }
 
+void InternDataHandler::getRandomRHS(const ParseResults& ex, std::vector<Base>& result) const {
+  cout << "should not be here" << endl;
+}
+
 void InternDataHandler::save(std::ostream& out) {
   out << "data size : " << size_ << endl;
   for (auto& example : examples_) {

@@ -106,6 +106,7 @@ void LayerDataHandler::convert(
   rslt.weight = example.weight;
   rslt.LHSTokens.clear();
   rslt.RHSTokens.clear();
+  rslt.NegFeatures = example.NegFeatures;
 
   if (args_->trainMode == 0) {
     assert(example.LHSTokens.size() > 0);
@@ -163,6 +164,21 @@ Base LayerDataHandler::genRandomWord() const {
   int r = rand() % ex.RHSFeatures.size();
   int wid = rand() % ex.RHSFeatures[r].size();
   return ex.RHSFeatures[r][wid];
+}
+
+void LayerDataHandler::getRandomRHS(const ParseResults& ex, std::vector<Base>& result) const {
+  int r = rand() % ex.NegFeatures.size();
+  result.clear();
+  if (args_->trainMode == 2) {
+    // pick one random, the rest is rhs features
+    for (int i = 0; i < ex.NegFeatures.size(); i++) {
+      if (i != r) {
+        insert(result, ex.NegFeatures[i], args_->dropoutRHS);
+      }
+    }
+  } else {
+    insert(result, ex.NegFeatures[r], args_->dropoutRHS);
+  }
 }
 
 void LayerDataHandler::getRandomRHS(vector<Base>& result) const {

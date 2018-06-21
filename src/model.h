@@ -62,7 +62,8 @@ public:
       bool trainWord = false);
 
   float trainOne(std::shared_ptr<InternDataHandler> data,
-                 const std::vector<Base>& items,
+                 const ParseResults& s,
+		 const std::vector<Base>& items,
                  const std::vector<Base>& labels,
                  size_t maxNegSamples,
                  Real rate,

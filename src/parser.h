@@ -44,6 +44,7 @@ struct ParseResults {
   std::vector<Base> LHSTokens;
   std::vector<Base> RHSTokens;
   std::vector<std::vector<Base>> RHSFeatures;
+  std::vector<std::vector<Base>> NegFeatures;
 };
 
 typedef std::vector<ParseResults> Corpus;

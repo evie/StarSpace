@@ -40,7 +40,11 @@ bool LayerDataParser::parse(
     if (pos != std::string::npos) {
         ex_weight = atof(tokens[0].substr(pos + 1).c_str());
     }
-    start_idx = 1;
+    start_idx += 1;
+  }
+  if (tokens[0].find("__negative__") != std::string::npos || (tokens.size() > 1 && tokens[1].find("__negative__") != std::string::npos)) {
+    ex_weight *= -1;
+    start_idx += 1;
   }
 
   for (int i = start_idx; i < tokens.size(); i++) {
@@ -87,7 +91,12 @@ bool LayerDataParser::parse(
   for (int i = start_idx; i < parts.size(); i++) {
     vector<Base> feats;
     if (parse(parts[i], feats)) {
-      rslt.RHSFeatures.push_back(feats);
+      if (feats[0].second >= 0) {
+        rslt.RHSFeatures.push_back(feats);
+      }else{
+	for (auto& p :feats) p.second *= -1;
+        rslt.NegFeatures.push_back(feats);
+      }
     }
   }
 

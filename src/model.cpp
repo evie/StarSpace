@@ -159,7 +159,7 @@ Real EmbedModel::trainOneExample(
   } else {
     // default is hinge loss
     return trainOne(
-      data,
+      data, s,
       s.LHSTokens, s.RHSTokens,
       negSearchLimit, wRate,
       trainWord
@@ -338,6 +338,7 @@ void EmbedModel::normalize(Matrix<float>::Row row, double maxNorm) {
 }
 
 float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
+                           const ParseResults& s,
                            const vector<Base>& items,
                            const vector<Base>& labels,
                            size_t negSearchLimit,
@@ -382,7 +383,8 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
   std::vector<std::vector<Base>> negLabelsBatch;
   Matrix<Real> negMean;
   negMean.matrix = zero_matrix<Real>(1, cols);
-
+  int negSampleCnt = 0;
+  int randomSampleCnt = 0;
   for (int i = 0; i < negSearchLimit &&
                   negs.size() < args_->maxNegSamples; i++) {
 
@@ -391,7 +393,13 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
       if (trainWord) {
         data->getRandomWord(negLabels);
       } else {
-        data->getRandomRHS(negLabels);
+	if (s.NegFeatures.size() > 0 && negSampleCnt < args_->maxNegSamples * args_->negSampleRatio) {
+	  data->getRandomRHS(s, negLabels);
+	  negSampleCnt += 1;
+	} else {
+          data->getRandomRHS(negLabels);
+	  randomSampleCnt += 1;
+	}
       }
     } while (negLabels == labels);
 

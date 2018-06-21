@@ -45,6 +45,7 @@ class Args {
     int thread;
     int maxNegSamples;
     int negSearchLimit;
+    double negSampleRatio;
     int minCount;
     int minCountLabel;
     int bucket;
