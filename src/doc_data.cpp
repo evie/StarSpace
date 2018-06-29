@@ -104,6 +104,7 @@ void LayerDataHandler::convert(
     ParseResults& rslt) const {
 
   rslt.weight = example.weight;
+  rslt.tmpDocInfo = example.tmpDocInfo;
   rslt.LHSTokens.clear();
   rslt.RHSTokens.clear();
   rslt.NegFeatures = example.NegFeatures;
@@ -118,7 +119,12 @@ void LayerDataHandler::convert(
     assert(example.RHSFeatures.size() > 1);
     if (args_->trainMode == 1) {
       // pick one random rhs as label, the rest becomes lhs features
-      auto idx = rand() % example.RHSFeatures.size();
+      int idx;
+      int cnt = 0;
+      do {
+        idx = rand() % example.RHSFeatures.size();
+      } while (g_no_app_rhs && example.DocInfos[idx].isApp && cnt++ < 5);
+
       for (int i = 0; i < example.RHSFeatures.size(); i++) {
         if (i == idx) {
           insert(rslt.RHSTokens, example.RHSFeatures[i], args_->dropoutRHS);
@@ -166,7 +172,7 @@ Base LayerDataHandler::genRandomWord() const {
   return ex.RHSFeatures[r][wid];
 }
 
-void LayerDataHandler::getRandomRHS(const ParseResults& ex, std::vector<Base>& result) const {
+void LayerDataHandler::getRandomNegRHS(const ParseResults& ex, std::vector<Base>& result) const {
   int r = rand() % ex.NegFeatures.size();
   result.clear();
   if (args_->trainMode == 2) {
@@ -183,19 +189,25 @@ void LayerDataHandler::getRandomRHS(const ParseResults& ex, std::vector<Base>& r
 
 void LayerDataHandler::getRandomRHS(vector<Base>& result) const {
   assert(size_ > 0);
-  auto& ex = examples_[rand() % size_];
-  int r = rand() % ex.RHSFeatures.size();
+  int r = 0;
+  int cnt = 0;
+  const ParseResults *ex;
+
+  do {
+    ex = &examples_[rand() % size_];
+    r = rand() % ex->RHSFeatures.size();
+  } while (g_no_app_rhs && ex->DocInfos[r].isApp && cnt++ < 5);
 
   result.clear();
   if (args_->trainMode == 2) {
     // pick one random, the rest is rhs features
-    for (int i = 0; i < ex.RHSFeatures.size(); i++) {
+    for (int i = 0; i < ex->RHSFeatures.size(); i++) {
       if (i != r) {
-        insert(result, ex.RHSFeatures[i], args_->dropoutRHS);
+        insert(result, ex->RHSFeatures[i], args_->dropoutRHS);
       }
     }
   } else {
-    insert(result, ex.RHSFeatures[r], args_->dropoutRHS);
+    insert(result, ex->RHSFeatures[r], args_->dropoutRHS);
   }
 }
 

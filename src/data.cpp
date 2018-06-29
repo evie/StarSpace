@@ -256,7 +256,7 @@ void InternDataHandler::getRandomRHS(vector<Base>& results) const {
   }
 }
 
-void InternDataHandler::getRandomRHS(const ParseResults& ex, std::vector<Base>& result) const {
+void InternDataHandler::getRandomNegRHS(const ParseResults& ex, std::vector<Base>& result) const {
   cout << "should not be here" << endl;
 }
 

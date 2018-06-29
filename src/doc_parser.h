@@ -31,6 +31,7 @@ public:
 
   bool parse(
       std::string& line,
+      ParseResults& ex,
       std::vector<Base>& rslt,
       const std::string& sep=" ");
 

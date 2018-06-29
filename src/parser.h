@@ -36,15 +36,29 @@
 #include <vector>
 
 namespace starspace {
-
+extern bool g_no_app_rhs;
 typedef std::pair<int32_t, float> Base;
+class DocInfo {
+public:
+  DocInfo & operator= (const DocInfo & other) {
+    isNegative = other.isNegative;
+    isApp = other.isApp;
+    return *this;
+  }
+  bool isNegative = false;
+  bool isApp = false;
+};
+void chomp(std::string& line, char toChomp = '\n');
 
 struct ParseResults {
   float weight = 1.0;
+  DocInfo tmpDocInfo;
+  std::string id = "";
   std::vector<Base> LHSTokens;
   std::vector<Base> RHSTokens;
   std::vector<std::vector<Base>> RHSFeatures;
   std::vector<std::vector<Base>> NegFeatures;
+  std::vector<DocInfo> DocInfos;
 };
 
 typedef std::vector<ParseResults> Corpus;

@@ -231,6 +231,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
       if (args_->trainMode != 5) {
         ParseResults ex;
         data->getExampleById(i, ex);
+
         thisLoss = trainOneExample(data, ex, negSearchLimit, rate, false);
         assert(thisLoss >= 0.0);
         counts[idx]++;
@@ -394,7 +395,7 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
         data->getRandomWord(negLabels);
       } else {
 	if (s.NegFeatures.size() > 0 && negSampleCnt < args_->maxNegSamples * args_->negSampleRatio) {
-	  data->getRandomRHS(s, negLabels);
+	  data->getRandomNegRHS(s, negLabels);
 	  negSampleCnt += 1;
 	} else {
           data->getRandomRHS(negLabels);

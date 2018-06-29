@@ -207,7 +207,15 @@ void StarSpace::parseDoc(
     const string& sep) {
 
   vector<string> tokens;
-  boost::split(tokens, line, boost::is_any_of(string(sep)));
+  size_t start_pos = 0;
+  //chomp(line); 
+  string line_new = line;
+  
+  if (boost::starts_with(line, "__id__")) {
+    start_pos = line.find_first_of("\t") + 1;
+    line_new = line.substr(start_pos);
+  }
+  boost::split(tokens, line_new, boost::is_any_of(string(sep)));
   parser_->parse(tokens, ids);
 }
 

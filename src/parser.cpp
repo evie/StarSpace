@@ -21,7 +21,9 @@ using namespace std;
 
 namespace starspace {
 
-void chomp(std::string& line, char toChomp = '\n') {
+bool g_no_app_rhs = false;
+
+void chomp(std::string& line, char toChomp) {
   auto sz = line.size();
   if (sz >= 1 && line[sz - 1] == toChomp) {
     line.resize(sz - 1);
@@ -54,7 +56,15 @@ void DataParser::parseForDict(
 
   chomp(line);
   vector<string> toks;
-  boost::split(toks, line, boost::is_any_of(string(sep)));
+  size_t start_pos = 0;
+  string line_new = line;
+
+  if (boost::starts_with(line, "__id__")) {
+    start_pos = line.find_first_of("\t") + 1;
+    line_new = line.substr(start_pos);
+  }
+  boost::split(toks, line_new, boost::is_any_of(string(sep)));
+
   for (int i = 0; i < toks.size(); i++) {
     string token = toks[i];
     if (args_->useWeight) {
@@ -66,7 +76,7 @@ void DataParser::parseForDict(
     if (args_->normalizeText) {
       normalize_text(token);
     }
-    if (token.find("__weight__") == std::string::npos && token.find("__negative__") == std::string::npos) {
+    if (token.find("__weight__") == std::string::npos && token.find("__negative__") == std::string::npos && token.find("__id__") == std::string::npos) {
       tokens.push_back(token);
     }
   }

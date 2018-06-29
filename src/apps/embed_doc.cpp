@@ -20,7 +20,7 @@ void embedDoc(StarSpace& sp, istream& fin) {
   string input;
   while (getline(fin, input)) {
     if (input.size() ==0) break;
-    cout << input << endl;
+    //cout << input << endl;
     auto vec = sp.getDocVector(input);
     vec.forEachCell([&](Real r) { cout << r << ' '; });
     cout << endl;

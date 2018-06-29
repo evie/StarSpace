@@ -28,9 +28,7 @@ public:
 
   virtual void getRandomRHS(std::vector<Base>& results)
     const;
-  virtual void getRandomRHS(const ParseResults& s, std::vector<Base>& results)
-    const;
-
+  virtual void getRandomNegRHS(const ParseResults& ex, std::vector<Base>& result) const; 
   virtual void save(std::ostream& out);
 
   virtual void getWordExamples(int idx, std::vector<ParseResults>& rslt) const;

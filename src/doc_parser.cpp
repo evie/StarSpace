@@ -26,6 +26,7 @@ LayerDataParser::LayerDataParser(
 
 bool LayerDataParser::parse(
     string& s,
+    ParseResults& ex,
     vector<Base>& feats,
     const string& sep) {
 
@@ -35,6 +36,17 @@ bool LayerDataParser::parse(
 
   int start_idx = 0;
   float ex_weight = 1.0;
+
+  // reset tmpDocInfo
+  ex.tmpDocInfo.isNegative = false;
+  ex.tmpDocInfo.isApp = false;
+
+  // stentence starts with __id__ is ignored
+  if (tokens[0].find("__id__") != std::string::npos) {
+    ex.id = tokens[1];
+    return false;
+  }
+
   if (tokens[0].find("__weight__") != std::string::npos) {
     std::size_t pos = tokens[0].find(":");
     if (pos != std::string::npos) {
@@ -43,7 +55,7 @@ bool LayerDataParser::parse(
     start_idx += 1;
   }
   if (tokens[0].find("__negative__") != std::string::npos || (tokens.size() > 1 && tokens[1].find("__negative__") != std::string::npos)) {
-    ex_weight *= -1;
+    ex.tmpDocInfo.isNegative = true;
     start_idx += 1;
   }
 
@@ -60,6 +72,10 @@ bool LayerDataParser::parse(
 
     if (args_->normalizeText) {
       normalize_text(t);
+    }
+    std::size_t pos = t.find(".");
+    if (pos != std::string::npos) {
+      ex.tmpDocInfo.isApp = true;
     }
     int32_t wid = dict_->getId(t);
     if (wid != -1)  {
@@ -85,17 +101,17 @@ bool LayerDataParser::parse(
 
   if (args_->trainMode == 0) {
     // the first part is input features
-    parse(parts[start_idx], rslt.LHSTokens);
+    parse(parts[start_idx], rslt, rslt.LHSTokens);
     start_idx += 1;
   }
   for (int i = start_idx; i < parts.size(); i++) {
     vector<Base> feats;
-    if (parse(parts[i], feats)) {
-      if (feats[0].second >= 0) {
-        rslt.RHSFeatures.push_back(feats);
-      }else{
-	for (auto& p :feats) p.second *= -1;
+    if (parse(parts[i], rslt, feats)) {
+      if (rslt.tmpDocInfo.isNegative) {
         rslt.NegFeatures.push_back(feats);
+      }else{
+        rslt.RHSFeatures.push_back(feats);
+	rslt.DocInfos.push_back(rslt.tmpDocInfo);
       }
     }
   }
