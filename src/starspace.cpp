@@ -171,7 +171,7 @@ void StarSpace::train() {
 
   auto t_start = std::chrono::high_resolution_clock::now();
   for (int i = 0; i < args_->epoch; i++) {
-    if (args_->saveEveryEpoch && i > 0) {
+    if (args_->saveEveryEpoch && i > 0 && i%5 == 0) {
       auto filename = args_->model;
       if (args_->saveTempModel) {
         filename = filename + "_epoch" + std::to_string(i);
