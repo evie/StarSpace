@@ -176,7 +176,7 @@ void StarSpace::train() {
       if (args_->saveTempModel) {
         filename = filename + "_epoch" + std::to_string(i);
       }
-      saveModel(filename);
+      //saveModel(filename);
       saveModelTsv(filename + ".tsv");
     }
     cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
