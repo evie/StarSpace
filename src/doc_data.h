@@ -36,9 +36,9 @@ public:
   void loadFromFile(const std::string& file,
                     std::shared_ptr<DataParser> parser) override;
 
-  void getRandomRHS(std::vector<Base>& results) const override;
+  void getRandomRHS(const ParseResults& s, std::vector<Base>& results) const override;
 
-  void getRandomNegRHS(const ParseResults& ex, std::vector<Base>& result) const; 
+  void getRandomNegRHS(const ParseResults& ex, std::vector<Base>& result) const override; 
   void save(std::ostream& out) override;
 
 private:

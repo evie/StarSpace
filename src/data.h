@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <map>
+#include <unordered_set>
 
 namespace starspace {
 
@@ -23,16 +25,15 @@ public:
 
   virtual void loadFromFile(const std::string& file,
                             std::shared_ptr<DataParser> parser);
-
   virtual void convert(const ParseResults& example, ParseResults& rslt) const;
 
-  virtual void getRandomRHS(std::vector<Base>& results)
+  virtual void getRandomRHS(const ParseResults& s, std::vector<Base>& results)
     const;
   virtual void getRandomNegRHS(const ParseResults& ex, std::vector<Base>& result) const; 
   virtual void save(std::ostream& out);
 
   virtual void getWordExamples(int idx, std::vector<ParseResults>& rslt) const;
-
+  void readCotap(const std::string &file) ;
   void getWordExamples(
       const std::vector<Base>& doc,
       std::vector<ParseResults>& rslt) const;
@@ -55,7 +56,7 @@ public:
 
   void initWordNegatives();
   void getRandomWord(std::vector<Base>& result);
-
+  bool isCotap(const std::string &pos, const std::string& neg) const;
 
 protected:
   virtual Base genRandomWord() const;
@@ -71,6 +72,7 @@ protected:
 
   int32_t word_iter_;
   std::vector<Base> word_negatives_;
+  std::unordered_map<std::string, std::unordered_set<std::string>> cotaps_;
 };
 
 }

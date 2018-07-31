@@ -15,6 +15,8 @@
 #include <fstream>
 #include <assert.h>
 
+#include <boost/algorithm/string.hpp>
+
 using namespace std;
 
 namespace starspace {
@@ -73,6 +75,37 @@ void InternDataHandler::loadFromFile(
   if (size_ == 0) {
     errorOnZeroExample(fileName);
   }
+}
+
+void InternDataHandler::readCotap(const std::string& file)  {
+  cout << "read cotap from input file : " << file << endl;
+  if (file.size()<=1) {
+    return;
+  }
+  ifstream fin(file);
+  if (!fin.is_open()) {
+    cerr << "Input file cannot be opened!" << endl;
+    exit(EXIT_FAILURE);
+  }
+  size_t cotap_cnt = 0;
+  std::string line;
+  while (getline(fin, line)) {
+    vector<string> tokens;
+    boost::split(tokens, line, boost::is_any_of(string(" \t")));
+    if (tokens.size() < 2) {
+      continue;
+    }
+    auto key = tokens[0];
+    unordered_set<string> cotap_set;
+    for (auto i=1; i<tokens.size(); i++) {
+      auto token = tokens[i];
+      cotap_set.insert(token);
+      cotap_cnt += 1;
+    }
+   cotaps_[key] = cotap_set; 
+  }
+  cout << "read cotap lines: " << cotaps_.size() <<" all cotap items: " << cotap_cnt << endl;
+  fin.close();
 }
 
 // Convert an example for training/testing if needed.
@@ -238,9 +271,27 @@ Base InternDataHandler::genRandomWord() const {
   return ex.LHSTokens[r];
 }
 
+bool InternDataHandler::isCotap(const std::string& pos, const std::string& neg) const {
+  //cout << "isCotap:" << pos << " " << neg << endl;
+  if (cotaps_.empty()){
+    return false;
+  }
+  if (cotaps_.find(pos) == cotaps_.end()) {
+    return false;
+  }
+  auto cotap_set = cotaps_.find(pos)->second;
+  //cout << "pos id: " << pos << " neg #:" << cotap_set.size() << endl;
+  if (cotap_set.find(neg) == cotap_set.end()) {
+    return false;
+  }
+  cout << "found cotap " << pos << " -> " << neg << endl;
+  return true;
+}
+
+
 // Randomly sample one example and randomly sample a label from this example
 // The result is usually used as negative samples in training
-void InternDataHandler::getRandomRHS(vector<Base>& results) const {
+void InternDataHandler::getRandomRHS(const ParseResults& s, vector<Base>& results) const {
   assert(size_ > 0);
   results.clear();
   auto& ex = examples_[rand() % size_];

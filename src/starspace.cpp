@@ -49,6 +49,7 @@ void StarSpace::initDataHandler() {
       validData_ = initData();
       validData_->loadFromFile(args_->validationFile, parser_);
     }
+    trainData_->readCotap(args_->cotapFile);
   } else {
     if (args_->testFile != "") {
       testData_ = initData();
@@ -85,6 +86,8 @@ void StarSpace::init() {
   // init train data class
   trainData_ = initData();
   trainData_->loadFromFile(args_->trainFile, parser_);
+
+  trainData_->readCotap(args_->cotapFile);
 
   // init model with args and dict
   model_ = make_shared<EmbedModel>(args_, dict_);
@@ -481,5 +484,6 @@ void StarSpace::saveModelTsv(const string& filename) {
   model_->saveTsv(fout, '\t');
   fout.close();
 }
+
 
 } // starspace

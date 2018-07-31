@@ -36,7 +36,7 @@ Args::Args() {
   thread = 10;
   maxNegSamples = 10;
   negSearchLimit = 50;
-  negSampleRatio = 0.5;
+  negSampleRatio = 0.0;
   minCount = 1;
   minCountLabel = 1;
   K = 5;
@@ -111,6 +111,8 @@ void Args::parseArgs(int argc, char** argv) {
       testFile = string(argv[i + 1]);
     } else if (strcmp(argv[i], "-predictionFile") == 0) {
       predictionFile = string(argv[i + 1]);
+    } else if (strcmp(argv[i], "-cotapFile") == 0) {
+      cotapFile = string(argv[i + 1]);
     } else if (strcmp(argv[i], "-basedoc") == 0) {
       basedoc = string(argv[i + 1]);
     } else if (strcmp(argv[i], "-model") == 0) {
@@ -244,6 +246,7 @@ void Args::printHelp() {
        << "\"starspace train ...\"  or \"starspace test ...\"\n\n"
        << "The following arguments are mandatory for train: \n"
        << "  -trainFile       training file path\n"
+       << "  -cotapFile       cotaps file path\n"
        << "  -model           output model file path\n\n"
        << "The following arguments are mandatory for test: \n"
        << "  -testFile        test file path\n"
@@ -306,6 +309,7 @@ void Args::printArgs() {
        << "similarity: " << similarity << endl
        << "maxNegSamples: " << maxNegSamples << endl
        << "negSearchLimit: " << negSearchLimit << endl
+       << "negSampleRatio: " << negSampleRatio << endl
        << "thread: " << thread << endl
        << "minCount: " << minCount << endl
        << "minCountLabel: " << minCountLabel << endl

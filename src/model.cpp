@@ -350,7 +350,7 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
   using namespace boost::numeric::ublas;
   // Keep all the activations on the stack so we can asynchronously
   // update.
-
+  //cout << "trainOne id: " << s.tmpDocInfo.id << endl;
   Matrix<Real> lhs, rhsP, rhsN;
 
   projectLHS(items, lhs);
@@ -388,7 +388,6 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
   int randomSampleCnt = 0;
   for (int i = 0; i < negSearchLimit &&
                   negs.size() < args_->maxNegSamples; i++) {
-
     std::vector<Base> negLabels;
     do {
       if (trainWord) {
@@ -398,11 +397,11 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
 	  data->getRandomNegRHS(s, negLabels);
 	  negSampleCnt += 1;
 	} else {
-          data->getRandomRHS(negLabels);
+          data->getRandomRHS(s, negLabels);
 	  randomSampleCnt += 1;
 	}
       }
-    } while (negLabels == labels);
+    } while (negLabels == labels &&  i < negSearchLimit);
 
     projectRHS(negLabels, rhsN);
 
@@ -486,7 +485,7 @@ float EmbedModel::trainNLL(shared_ptr<InternDataHandler> data,
       if (trainWord) {
         data->getRandomWord(negLabels);
       } else {
-        data->getRandomRHS(negLabels);
+        data->getRandomRHS(ParseResults(), negLabels); //TODO: fixme
       }
     } while (negLabels == labels);
     projectRHS(negLabels, rhsN);

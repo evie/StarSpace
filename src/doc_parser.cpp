@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 #include <boost/algorithm/string.hpp>
 
@@ -41,22 +42,22 @@ bool LayerDataParser::parse(
   ex.tmpDocInfo.isNegative = false;
   ex.tmpDocInfo.isApp = false;
 
-  // stentence starts with __id__ is ignored
-  if (tokens[0].find("__id__") != std::string::npos) {
-    ex.id = tokens[1];
-    return false;
-  }
-
-  if (tokens[0].find("__weight__") != std::string::npos) {
-    std::size_t pos = tokens[0].find(":");
-    if (pos != std::string::npos) {
-        ex_weight = atof(tokens[0].substr(pos + 1).c_str());
+  for (int i = start_idx; i < std::min(4, int(tokens.size())); i++) {
+      string t = tokens[i];
+    // stentence starts with __id__ is sentence id
+    if (boost::starts_with(t, "__id__")) {
+      ex.tmpDocInfo.id = t.substr(7);
+      start_idx = i+1;
+    }else if (boost::starts_with(t, "__weight__")) {
+      std::size_t pos = t.find(":");
+      if (pos != std::string::npos) {
+          ex_weight = atof(t.substr(pos + 1).c_str());
+      }
+      start_idx = i+1;
+    } else if (boost::starts_with(t, "__negative__")) {
+      ex.tmpDocInfo.isNegative = true;
+      start_idx = i+1;
     }
-    start_idx += 1;
-  }
-  if (tokens[0].find("__negative__") != std::string::npos || (tokens.size() > 1 && tokens[1].find("__negative__") != std::string::npos)) {
-    ex.tmpDocInfo.isNegative = true;
-    start_idx += 1;
   }
 
   for (int i = start_idx; i < tokens.size(); i++) {
@@ -123,6 +124,7 @@ bool LayerDataParser::parse(
     // need to have at least two examples
     isValid = rslt.RHSFeatures.size() > 1;
   }
+  //cout << "sample sent size " << rslt.RHSFeatures.size()  << endl;
 
   return isValid;
 }

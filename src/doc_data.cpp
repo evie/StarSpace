@@ -108,6 +108,7 @@ void LayerDataHandler::convert(
   rslt.LHSTokens.clear();
   rslt.RHSTokens.clear();
   rslt.NegFeatures = example.NegFeatures;
+  rslt.id = example.id;
 
   if (args_->trainMode == 0) {
     assert(example.LHSTokens.size() > 0);
@@ -124,6 +125,7 @@ void LayerDataHandler::convert(
       do {
         idx = rand() % example.RHSFeatures.size();
       } while (g_no_app_rhs && example.DocInfos[idx].isApp && cnt++ < 5);
+      rslt.tmpDocInfo = example.DocInfos[idx];
 
       for (int i = 0; i < example.RHSFeatures.size(); i++) {
         if (i == idx) {
@@ -187,16 +189,15 @@ void LayerDataHandler::getRandomNegRHS(const ParseResults& ex, std::vector<Base>
   }
 }
 
-void LayerDataHandler::getRandomRHS(vector<Base>& result) const {
+void LayerDataHandler::getRandomRHS(const ParseResults& s, vector<Base>& result) const {
   assert(size_ > 0);
   int r = 0;
   int cnt = 0;
   const ParseResults *ex;
-
   do {
     ex = &examples_[rand() % size_];
     r = rand() % ex->RHSFeatures.size();
-  } while (g_no_app_rhs && ex->DocInfos[r].isApp && cnt++ < 5);
+  } while (((g_no_app_rhs && ex->DocInfos[r].isApp) || isCotap(s.tmpDocInfo.id, ex->DocInfos[r].id)) && cnt++ < 10);
 
   result.clear();
   if (args_->trainMode == 2) {

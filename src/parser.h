@@ -43,10 +43,12 @@ public:
   DocInfo & operator= (const DocInfo & other) {
     isNegative = other.isNegative;
     isApp = other.isApp;
+    id = other.id;
     return *this;
   }
   bool isNegative = false;
   bool isApp = false;
+  std::string id;
 };
 void chomp(std::string& line, char toChomp = '\n');
 
