@@ -284,7 +284,7 @@ bool InternDataHandler::isCotap(const std::string& pos, const std::string& neg) 
   if (cotap_set.find(neg) == cotap_set.end()) {
     return false;
   }
-  cout << "found cotap " << pos << " -> " << neg << endl;
+  //cout << "found cotap " << pos << " -> " << neg << endl;
   return true;
 }
 
