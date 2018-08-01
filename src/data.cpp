@@ -96,13 +96,11 @@ void InternDataHandler::readCotap(const std::string& file)  {
       continue;
     }
     auto key = tokens[0];
-    unordered_set<string> cotap_set;
     for (auto i=1; i<tokens.size(); i++) {
       auto token = tokens[i];
-      cotap_set.insert(token);
+      cotaps_.insert(key+token);
       cotap_cnt += 1;
     }
-   cotaps_[key] = cotap_set; 
   }
   cout << "read cotap lines: " << cotaps_.size() <<" all cotap items: " << cotap_cnt << endl;
   fin.close();
@@ -276,15 +274,10 @@ bool InternDataHandler::isCotap(const std::string& pos, const std::string& neg) 
   if (cotaps_.empty()){
     return false;
   }
-  if (cotaps_.find(pos) == cotaps_.end()) {
+  if (cotaps_.find(pos+neg) == cotaps_.end()) {
     return false;
   }
-  auto cotap_set = cotaps_.find(pos)->second;
-  //cout << "pos id: " << pos << " neg #:" << cotap_set.size() << endl;
-  if (cotap_set.find(neg) == cotap_set.end()) {
-    return false;
-  }
-  //cout << "found cotap " << pos << " -> " << neg << endl;
+  cout << "found cotap " << pos << " -> " << neg << endl;
   return true;
 }
 

@@ -72,7 +72,7 @@ protected:
 
   int32_t word_iter_;
   std::vector<Base> word_negatives_;
-  std::unordered_map<std::string, std::unordered_set<std::string>> cotaps_;
+  std::unordered_set<std::string> cotaps_;
 };
 
 }
