@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <map>
+#include <unordered_map>
 #include <unordered_set>
 
 namespace starspace {
