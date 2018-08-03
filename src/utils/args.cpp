@@ -37,6 +37,7 @@ Args::Args() {
   maxNegSamples = 10;
   negSearchLimit = 50;
   negSampleRatio = 0.0;
+  posRatio = 0.0;
   minCount = 1;
   minCountLabel = 1;
   K = 5;
@@ -161,6 +162,8 @@ void Args::parseArgs(int argc, char** argv) {
       negSearchLimit = atoi(argv[i + 1]);
     } else if (strcmp(argv[i], "-negSampleRatio") == 0) {
       negSampleRatio = atof(argv[i + 1]);
+    } else if (strcmp(argv[i], "-posRatio") == 0) {
+      posRatio = atof(argv[i + 1]);
     } else if (strcmp(argv[i], "-minCount") == 0) {
       minCount = atoi(argv[i + 1]);
     } else if (strcmp(argv[i], "-minCountLabel") == 0) {
@@ -270,6 +273,7 @@ void Args::printHelp() {
        << "  -negSearchLimit  number of negatives sampled [" << negSearchLimit << "]\n"
        << "  -maxNegSamples   max number of negatives in a batch update [" << maxNegSamples << "]\n"
        << "  -negSampleRatio  ratio of negative examples from user's negative example and global random example. [" << negSampleRatio << "]\n"
+       << "  -posRatio        ratio of positive examples as the RHS. [" << posRatio << "]\n"
        << "  -loss            loss function {hinge, softmax} [hinge]\n"
        << "  -margin          margin parameter in hinge loss. It's only effective if hinge loss is used. [" << margin << "]\n"
        << "  -similarity      takes value in [cosine, dot]. Whether to use cosine or dot product as similarity function in  hinge loss.\n"
@@ -310,6 +314,7 @@ void Args::printArgs() {
        << "maxNegSamples: " << maxNegSamples << endl
        << "negSearchLimit: " << negSearchLimit << endl
        << "negSampleRatio: " << negSampleRatio << endl
+       << "posRatio: " << posRatio << endl
        << "thread: " << thread << endl
        << "minCount: " << minCount << endl
        << "minCountLabel: " << minCountLabel << endl

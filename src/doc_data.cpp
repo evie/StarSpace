@@ -126,14 +126,16 @@ void LayerDataHandler::convert(
         idx = rand() % example.RHSFeatures.size();
       } while (g_no_app_rhs && example.DocInfos[idx].isApp && cnt++ < 5);
       rslt.tmpDocInfo = example.DocInfos[idx];
-
+      int nn = 0;
       for (int i = 0; i < example.RHSFeatures.size(); i++) {
-        if (i == idx) {
+        if ((i == idx) || (args_->posRatio > 0 && 1.0 * rand() / RAND_MAX < args_->posRatio)) {
+	  nn++;
           insert(rslt.RHSTokens, example.RHSFeatures[i], args_->dropoutRHS);
         } else {
           insert(rslt.LHSTokens, example.RHSFeatures[i], args_->dropoutLHS);
         }
       }
+      //cout << " pos cnt " << nn <<endl;
     } else
     if (args_->trainMode == 2) {
       // pick one random rhs as lhs, the rest becomes rhs features

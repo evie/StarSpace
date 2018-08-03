@@ -167,6 +167,10 @@ Real EmbedModel::trainOneExample(
   }
 }
 
+int dbg_train_ex_cnt = 0;
+float dbg_loss_acc = 0.0;
+int dbg_neg_acc = 0;
+int dbg_neg_search_acc = 0;
 Real EmbedModel::train(shared_ptr<InternDataHandler> data,
                        int numThreads,
 		       std::chrono::time_point<std::chrono::high_resolution_clock> t_start,
@@ -204,6 +208,11 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
   vector<Real> losses(numThreads);
   vector<long> counts(numThreads);
 
+  dbg_train_ex_cnt = 0;
+  dbg_neg_acc = 0;
+  dbg_loss_acc = 0.0;
+  dbg_neg_search_acc = 0;
+
   auto trainThread = [&](int idx,
                          vector<int>::const_iterator start,
                          vector<int>::const_iterator end) {
@@ -224,14 +233,16 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
         for (auto ex : exs) {
           thisLoss = trainOneExample(data, ex, negSearchLimit, rate, true);
           assert(thisLoss >= 0.0);
-          counts[idx]++;
-          losses[idx] += thisLoss;
+	  if (thisLoss > 0.000001) {
+            counts[idx]++;
+            losses[idx] += thisLoss;
+	  }
         }
       }
       if (args_->trainMode != 5) {
         ParseResults ex;
         data->getExampleById(i, ex);
-
+        ex.tid = idx;
         thisLoss = trainOneExample(data, ex, negSearchLimit, rate, false);
         assert(thisLoss >= 0.0);
         counts[idx]++;
@@ -271,7 +282,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
         std::cerr << std::fixed;
         std::cerr << "\rEpoch: " << std::setprecision(1) << 100 * epoch_progress << "%";
         std::cerr << "  lr: " << std::setprecision(6) << rate;
-        std::cerr << "  loss: " << std::setprecision(6) << losses[idx] / counts[idx];
+        std::cerr << "  loss: " << std::setprecision(6) << losses[idx] / counts[idx] << " valid-count " << counts[idx];
         if (eta < 60) {
           std::cerr << "  eta: <1min ";
         } else {
@@ -386,7 +397,8 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
   negMean.matrix = zero_matrix<Real>(1, cols);
   int negSampleCnt = 0;
   int randomSampleCnt = 0;
-  for (int i = 0; i < negSearchLimit &&
+  int i = 0;
+  for (i = 0; i < negSearchLimit &&
                   negs.size() < args_->maxNegSamples; i++) {
     std::vector<Base> negLabels;
     do {
@@ -415,8 +427,21 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
       assert(loss >= 0.0);
     }
   }
-  loss /= negSearchLimit;
-  negMean.matrix /= negs.size();
+  if (negs.size() > 0) {
+    loss /= negs.size();
+    negMean.matrix /= negs.size();
+  }
+  // show if it is hard to find a negative example
+  if (s.tid == 0) {
+    dbg_train_ex_cnt++;
+    dbg_loss_acc += loss;
+    dbg_neg_acc += negs.size();
+    dbg_neg_search_acc += std::min(i+1, int(negSearchLimit));
+    if (dbg_train_ex_cnt % 100 == 99) {
+      cout << "\t neg " << negs.size() << " search-num " << std::min(i+1, int(negSearchLimit)) << " loss " << loss 
+	   <<  " neg-hit " << 1.0*dbg_neg_acc/dbg_neg_search_acc << " avg-loss " << 1.0*dbg_loss_acc/dbg_neg_acc <<  "\r";
+    }
+  }
 
   // Couldn't find a negative example given reasonable effort, so
   // give up.

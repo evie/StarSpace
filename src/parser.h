@@ -56,6 +56,7 @@ struct ParseResults {
   float weight = 1.0;
   DocInfo tmpDocInfo;
   std::string id = "";
+  int tid = 0; // store the idex of the current thread; for debug only
   std::vector<Base> LHSTokens;
   std::vector<Base> RHSTokens;
   std::vector<std::vector<Base>> RHSFeatures;

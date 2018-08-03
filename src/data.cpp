@@ -99,10 +99,10 @@ void InternDataHandler::readCotap(const std::string& file)  {
     for (auto i=1; i<tokens.size(); i++) {
       auto token = tokens[i];
       cotaps_.insert(key+token);
-      cotap_cnt += 1;
     }
+    cotap_cnt += 1;
   }
-  cout << "read cotap lines: " << cotaps_.size() <<" all cotap items: " << cotap_cnt << endl;
+  cout << "read cotap items: " << cotaps_.size() <<" from lines: " << cotap_cnt << endl;
   fin.close();
 }
 
