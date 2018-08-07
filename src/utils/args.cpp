@@ -301,8 +301,10 @@ void Args::printHelp() {
        << std::endl;
 }
 
-void Args::printArgs() {
-  cout << "Arguments: \n"
+void Args::printArgs(std::ostream &out) {
+  out << "Arguments: \n"
+       << "trainFile: " << trainFile << endl
+       << "cotapsFile: " << cotapFile << endl
        << "lr: " << lr << endl
        << "dim: " << dim << endl
        << "epoch: " << epoch << endl

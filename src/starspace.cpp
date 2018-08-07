@@ -183,6 +183,7 @@ void StarSpace::train() {
       saveModelTsv(filename + ".tsv");
     }
     cout << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
+    args_->log_ << "Training epoch " << i << ": " << rate << ' ' << decrPerEpoch << endl;
     auto err = model_->train(trainData_, args_->thread,
 			     t_start,  i,
 			     rate, rate - decrPerEpoch);

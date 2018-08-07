@@ -17,7 +17,9 @@ using namespace starspace;
 int main(int argc, char** argv) {
   shared_ptr<Args> args = make_shared<Args>();
   args->parseArgs(argc, argv);
-  args->printArgs();
+  args->log_.open(args->model + ".log", std::ofstream::out);
+  args->printArgs(cout);
+  args->printArgs(args->log_);
 
   StarSpace sp(args);
   if (args->isTrain) {
@@ -27,7 +29,7 @@ int main(int argc, char** argv) {
       } else {
         sp.initFromSavedModel(args->initModel);
         cout << "------Loaded model args:\n";
-        args->printArgs();
+        args->printArgs(cout);
       }
     } else {
       sp.init();
@@ -41,10 +43,10 @@ int main(int argc, char** argv) {
     } else {
       sp.initFromSavedModel(args->model);
       cout << "------Loaded model args:\n";
-      args->printArgs();
+      args->printArgs(cout);
     }
     sp.evaluate();
   }
-
+  args->log_.close();
   return 0;
 }

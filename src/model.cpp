@@ -291,6 +291,16 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
         std::cerr << "  tot: " << std::setprecision(3) << toth << "h" << totm << "m"  << tots << "s ";
         std::cerr << " (" << std::setprecision(1) << 100 * progress << "%)";
         std::cerr << std::flush;
+
+	if ((ip+1)==end) {
+          args_->log_ << "neg " <<  dbg_neg_acc << " search-num " << dbg_neg_search_acc << " loss " << dbg_loss_acc
+	   <<  " neg-hit " << 1.0*dbg_neg_acc/dbg_neg_search_acc << " avg-loss " << 1.0*dbg_loss_acc/dbg_neg_acc ;
+          args_->log_  << "  lr: " << std::setprecision(6) << rate;
+          args_->log_  << "  loss: " << std::setprecision(6) << losses[idx] / counts[idx] << " valid-count " << counts[idx];
+          args_->log_  << "  tot: " << std::setprecision(3) << toth << "h" << totm << "m"  << tots << "s " << endl;
+          args_->log_  << std::flush;
+		
+	}
       }
     }
   };

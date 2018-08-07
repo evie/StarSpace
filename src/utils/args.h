@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream> 
 
 namespace starspace {
 
@@ -65,10 +66,11 @@ class Args {
     bool useWeight;
     bool trainWord;
     bool excludeLHS;
+    std::ofstream log_;
 
     void parseArgs(int, char**);
     void printHelp();
-    void printArgs();
+    void printArgs(std::ostream &out);
     void save(std::ostream& out);
     void load(std::istream& in);
     bool isTrue(std::string arg);
