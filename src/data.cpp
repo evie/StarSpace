@@ -71,6 +71,7 @@ void InternDataHandler::loadFromFile(
     destCursor += subcorp.size();
   }
   cout << "Total number of examples loaded : " << examples_.size() << endl;
+  args_->log_ << "Total number of examples loaded : " << examples_.size() << endl;
   size_ = examples_.size();
   if (size_ == 0) {
     errorOnZeroExample(fileName);

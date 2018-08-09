@@ -166,6 +166,9 @@ void Dictionary::readFromFile(
   std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
   std::cerr << "Number of words in dictionary:  " << nwords_ << std::endl;
   std::cerr << "Number of labels in dictionary: " << nlabels_ << std::endl;
+  args_->log_ << "Read " << ntokens_  / 1000000 << "M words" << std::endl;
+  args_->log_ << "Number of words in dictionary:  " << nwords_ << std::endl;
+  args_->log_ << "Number of labels in dictionary: " << nlabels_ << std::endl;
   if (lines_read == 0) {
     std::cerr << "ERROR: Empty file." << std::endl;
     exit(EXIT_FAILURE);
@@ -223,6 +226,8 @@ void Dictionary::loadDictFromModel(const string& modelfile) {
 
   std::cout << "Number of words in dictionary:  " << nwords_ << std::endl;
   std::cout << "Number of labels in dictionary: " << nlabels_ << std::endl;
+  args_->log_ << "Number of words in dictionary:  " << nwords_ << std::endl;
+  args_->log_ << "Number of labels in dictionary: " << nlabels_ << std::endl;
 }
 
 } // namespace
