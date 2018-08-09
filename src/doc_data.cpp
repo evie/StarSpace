@@ -199,7 +199,7 @@ void LayerDataHandler::getRandomRHS(const ParseResults& s, vector<Base>& result)
   do {
     ex = &examples_[rand() % size_];
     r = rand() % ex->RHSFeatures.size();
-  } while (((g_no_app_rhs && ex->DocInfos[r].isApp) || isCotap(s.tmpDocInfo.id, ex->DocInfos[r].id)) && cnt++ < 10);
+  } while (((g_no_app_rhs && ex->DocInfos[r].isApp) || isCotap(s.tmpDocInfo, ex->DocInfos[r], s.tid)) && cnt++ < 10);
 
   result.clear();
   if (args_->trainMode == 2) {

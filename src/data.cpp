@@ -104,6 +104,7 @@ void InternDataHandler::readCotap(const std::string& file)  {
     cotap_cnt += 1;
   }
   cout << "read cotap items: " << cotaps_.size() <<" from lines: " << cotap_cnt << endl;
+  args_->log_ << "read cotap items: " << cotaps_.size() <<" from lines: " << cotap_cnt << endl;
   fin.close();
 }
 
@@ -270,15 +271,17 @@ Base InternDataHandler::genRandomWord() const {
   return ex.LHSTokens[r];
 }
 
-bool InternDataHandler::isCotap(const std::string& pos, const std::string& neg) const {
+bool InternDataHandler::isCotap(const DocInfo& pos, const DocInfo& neg, const int tid) const {
   //cout << "isCotap:" << pos << " " << neg << endl;
   if (cotaps_.empty()){
     return false;
   }
-  if (cotaps_.find(pos+neg) == cotaps_.end()) {
+  if (tid==0) dbg_cotap_try_acc ++;
+  if (cotaps_.find(pos.id+neg.id) == cotaps_.end()) {
     return false;
   }
   //cout << "found cotap " << pos << " -> " << neg << endl;
+  if (tid==0) dbg_cotap_hit_acc ++;
   return true;
 }
 

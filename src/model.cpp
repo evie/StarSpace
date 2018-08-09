@@ -170,7 +170,10 @@ Real EmbedModel::trainOneExample(
 int dbg_train_ex_cnt = 0;
 float dbg_loss_acc = 0.0;
 int dbg_neg_acc = 0;
+int dbg_neg_specified_acc = 0;
 int dbg_neg_search_acc = 0;
+long dbg_cotap_hit_acc = 0;
+long dbg_cotap_try_acc = 1; // avoid divide 0; one more.. 
 Real EmbedModel::train(shared_ptr<InternDataHandler> data,
                        int numThreads,
 		       std::chrono::time_point<std::chrono::high_resolution_clock> t_start,
@@ -210,8 +213,11 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
 
   dbg_train_ex_cnt = 0;
   dbg_neg_acc = 0;
+  dbg_neg_specified_acc = 0;
   dbg_loss_acc = 0.0;
   dbg_neg_search_acc = 0;
+  dbg_cotap_try_acc = 0;
+  dbg_cotap_hit_acc = 0;
 
   auto trainThread = [&](int idx,
                          vector<int>::const_iterator start,
@@ -233,7 +239,7 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
         for (auto ex : exs) {
           thisLoss = trainOneExample(data, ex, negSearchLimit, rate, true);
           assert(thisLoss >= 0.0);
-	  if (thisLoss > 0.000001) {
+	  if (thisLoss > 0.0001) {
             counts[idx]++;
             losses[idx] += thisLoss;
 	  }
@@ -294,7 +300,8 @@ Real EmbedModel::train(shared_ptr<InternDataHandler> data,
 
 	if ((ip+1)==end) {
           args_->log_ << "neg " <<  dbg_neg_acc << " search-num " << dbg_neg_search_acc << " loss " << dbg_loss_acc
-	   <<  " neg-hit " << 1.0*dbg_neg_acc/dbg_neg_search_acc << " avg-loss " << 1.0*dbg_loss_acc/dbg_neg_acc ;
+	   <<  " neg-hit " << 1.0*dbg_neg_acc/dbg_neg_search_acc << " avg-loss " << 1.0*dbg_loss_acc/dbg_neg_acc 
+	   <<  " cotap try " << dbg_cotap_try_acc << " cotap hit " << dbg_cotap_hit_acc << "/" << 1.0*dbg_cotap_hit_acc/dbg_cotap_try_acc;
           args_->log_  << "  lr: " << std::setprecision(6) << rate;
           args_->log_  << "  loss: " << std::setprecision(6) << losses[idx] / counts[idx] << " valid-count " << counts[idx];
           args_->log_  << "  tot: " << std::setprecision(3) << toth << "h" << totm << "m"  << tots << "s " << endl;
@@ -446,10 +453,12 @@ float EmbedModel::trainOne(shared_ptr<InternDataHandler> data,
     dbg_train_ex_cnt++;
     dbg_loss_acc += loss;
     dbg_neg_acc += negs.size();
+    dbg_neg_specified_acc += negSampleCnt;
     dbg_neg_search_acc += std::min(i+1, int(negSearchLimit));
     if (dbg_train_ex_cnt % 100 == 99) {
       cout << "\t neg " << negs.size() << " search-num " << std::min(i+1, int(negSearchLimit)) << " loss " << loss 
-	   <<  " neg-hit " << 1.0*dbg_neg_acc/dbg_neg_search_acc << " avg-loss " << 1.0*dbg_loss_acc/dbg_neg_acc <<  "\r";
+	   <<  " neg-hit " << 1.0*dbg_neg_acc/dbg_neg_search_acc << " avg-loss " << 1.0*dbg_loss_acc/dbg_neg_acc 
+	   <<  " cotap-hit " << dbg_cotap_hit_acc << "/" << 1.0*dbg_cotap_hit_acc/dbg_cotap_try_acc <<  "\t\r";
     }
   }
 

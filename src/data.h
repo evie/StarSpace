@@ -18,7 +18,8 @@
 #include <unordered_set>
 
 namespace starspace {
-
+extern long dbg_cotap_hit_acc;
+extern long dbg_cotap_try_acc;
 class InternDataHandler {
 public:
   explicit InternDataHandler(std::shared_ptr<Args> args);
@@ -56,7 +57,7 @@ public:
 
   void initWordNegatives();
   void getRandomWord(std::vector<Base>& result);
-  bool isCotap(const std::string &pos, const std::string& neg) const;
+  bool isCotap(const DocInfo &pos, const DocInfo& neg, const int tid=0) const;
 
 protected:
   virtual Base genRandomWord() const;
