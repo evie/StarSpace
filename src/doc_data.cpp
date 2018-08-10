@@ -138,7 +138,7 @@ void LayerDataHandler::convert(
 	  }
         }
       }
-      cout << " pos cnt " << nn <<endl;
+      //cout << " pos cnt " << nn <<endl;
     } else
     if (args_->trainMode == 2) {
       // pick one random rhs as lhs, the rest becomes rhs features
