@@ -14,6 +14,7 @@
 #include <vector>
 #include <fstream>
 #include <assert.h>
+#include <stdlib.h> 
 
 using namespace std;
 
@@ -129,13 +130,15 @@ void LayerDataHandler::convert(
       int nn = 0;
       for (int i = 0; i < example.RHSFeatures.size(); i++) {
         if ((i == idx) || (args_->posRatio > 0 && 1.0 * rand() / RAND_MAX < args_->posRatio)) {
-	  nn++;
           insert(rslt.RHSTokens, example.RHSFeatures[i], args_->dropoutRHS);
         } else {
-          insert(rslt.LHSTokens, example.RHSFeatures[i], args_->dropoutLHS);
+	  if (args_->posPreRange <= 0 || abs(i-idx) <= args_->posPreRange ) {
+	    nn++;
+            insert(rslt.LHSTokens, example.RHSFeatures[i], args_->dropoutLHS);
+	  }
         }
       }
-      //cout << " pos cnt " << nn <<endl;
+      cout << " pos cnt " << nn <<endl;
     } else
     if (args_->trainMode == 2) {
       // pick one random rhs as lhs, the rest becomes rhs features

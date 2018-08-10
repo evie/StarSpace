@@ -41,6 +41,7 @@ class Args {
     double dropoutRHS;
     double wordWeight;
     double posRatio;
+    int posPreRange;
     size_t dim;
     int epoch;
     int ws;
