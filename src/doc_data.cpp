@@ -125,14 +125,14 @@ void LayerDataHandler::convert(
       int cnt = 0;
       do {
         idx = rand() % example.RHSFeatures.size();
-      } while (g_no_app_rhs && example.DocInfos[idx].isApp && cnt++ < 5);
+      } while ((g_no_app_rhs && example.DocInfos[idx].isApp && cnt++ < 5) || (args_->posPreRange>0 && idx == 0 && cnt++ < 5));
       rslt.tmpDocInfo = example.DocInfos[idx];
       int nn = 0;
       for (int i = 0; i < example.RHSFeatures.size(); i++) {
         if ((i == idx) || (args_->posRatio > 0 && 1.0 * rand() / RAND_MAX < args_->posRatio)) {
           insert(rslt.RHSTokens, example.RHSFeatures[i], args_->dropoutRHS);
         } else {
-	  if (args_->posPreRange <= 0 || abs(i-idx) <= args_->posPreRange ) {
+	  if (args_->posPreRange <= 0 || ((i < idx) && (i + args_->posPreRange) >= idx) ) {
 	    nn++;
             insert(rslt.LHSTokens, example.RHSFeatures[i], args_->dropoutLHS);
 	  }
